@@ -1,8 +1,10 @@
 package models
 
 type Tutor struct {
-	User        User
-	Salary      float32
+	UserID      string
+	Name        string
+	HourlyRate  int
 	Description string
 	PhotoPath   string
+	SubjectIDs  []int64
 }

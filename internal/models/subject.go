@@ -1,6 +1,6 @@
 package models
 
-type subject struct {
-	name string
-	id   int64
+type Subject struct {
+	ID   int64
+	Name string
 }

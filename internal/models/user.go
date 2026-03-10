@@ -1,10 +1,16 @@
 package models
 
+type Role string
+
+const (
+	RoleStudent Role = "student"
+	RoleTutor   Role = "tutor"
+)
+
+// User - базовая сущность пользователя (для авторизации)
 type User struct {
-	Id         string
-	Name       string
-	Email      string
-	Password   string
-	Login      string
-	SubjectsId []int64
+	ID           string
+	Email        string
+	PasswordHash string
+	Role         Role
 }
