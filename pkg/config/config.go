@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	AppEnv string `mapstructure:"APP_ENV"`
+	AppEnv   string `mapstructure:"APP_ENV"`
+	HTTPPort string `mapstructure:"HTTP_PORT"`
 }
 
 func LoadConfig(path string) (*Config, error) {
