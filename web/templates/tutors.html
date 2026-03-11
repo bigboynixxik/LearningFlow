@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="/static/css/style.css">
-  <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>{{.Title}}</title>
 </head>
 <body>
 <h1>Наши репетиторы</h1>
 <a href="/">← На главную</a>
 <div class="tutor-grid">
-  {{range .Tutors}}
-  <div class="tutor-card">
-    <h3>{{.Name}}</h3>
-    <p>{{.Description}}</p>
-    <div class="price">{{.HourlyRate}} ₽ / час</div>
-    <a href="/tutor/{{.UserID}}" class="btn">Подробнее</a>
-  </div>
-  {{else}}
-  <p>В этой категории пока нет репетиторов.</p>
-  {{end}}
+    {{range .Tutors}}
+    <div class="tutor-card">
+        <h3>{{.Name}}</h3>
+        <p>{{.Description}}</p>
+        <div class="price">{{.HourlyRate}} ₽ / час</div>
+        <a href="/tutor/{{.UserID}}" class="btn">Подробнее</a>
+    </div>
+    {{else}}
+    <p>В этой категории пока нет репетиторов.</p>
+    {{end}}
 </div>
 </body>
 </html>

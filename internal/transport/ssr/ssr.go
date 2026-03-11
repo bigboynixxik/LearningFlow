@@ -40,8 +40,9 @@ type HomeData struct {
 }
 
 type TutorsData struct {
-	Title  string
-	Tutors []models.Tutor
+	Title        string
+	Tutors       []models.Tutor
+	CategoryName string
 }
 
 type TutorData struct {
@@ -105,6 +106,7 @@ func HandleCategory(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ssr.HandleCategory parse id error", http.StatusInternalServerError)
 		return
 	}
+
 	var filteredTutors []models.Tutor
 	for _, tutor := range mockTutors {
 		for _, subjectID := range tutor.SubjectIDs {
@@ -114,7 +116,13 @@ func HandleCategory(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	data := TutorsData{Tutors: filteredTutors, Title: "Category"}
+	var categoryName string
+	for _, subject := range mockSubjects {
+		if subject.ID == id {
+			categoryName = subject.Name
+		}
+	}
+	data := TutorsData{Tutors: filteredTutors, Title: "Category", CategoryName: categoryName}
 	tmpl, err := template.ParseFiles("web/templates/category.html")
 	if err != nil {
 		logs.Error("ssr.HandleCategory template parse error",
