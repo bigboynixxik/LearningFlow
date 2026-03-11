@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>{{.Tutor.Name}} - LearnFlow</title>
+</head>
+<body>
+<div class="tutor-detail">
+    <a href="/tutors">← К списку</a>
+    <h1>{{.Tutor.Name}}</h1>
+    <p class="price">Ставка: {{.Tutor.HourlyRate}} рублей в час</p>
+    <hr>
+    <h3>О себе</h3>
+    <p>{{.Tutor.Description}}</p>
+    <button class="btn" onclick="alert('В следующей лабе добавим в корзину!')">
+        Забронировать занятие
+    </button>
+</div>
+</body>
+</html>

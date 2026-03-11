@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css">
     <title>{{.Title}}</title>
 </head>
 <body>
-<h1>Добро пожаловать в LearnFlow!</h1>
-<h2>Выберите предмет для изучения:</h2>
-<ul>
-    <!-- Цикл range проходит по слайсу Subjects -->
+<h1>Учебная платформа LearnFlow</h1>
+<p>Выберите предмет, чтобы найти наставника:</p>
+<ul class="subject-list">
     {{range .Subjects}}
     <li><a href="/category/{{.ID}}">{{.Name}}</a></li>
     {{end}}
+    <li><a href="/tutors" style="background: #7f8c8d;">Все репетиторы</a></li>
 </ul>
 </body>
 </html>

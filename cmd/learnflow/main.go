@@ -7,6 +7,9 @@ import (
 
 func main() {
 	ctx := context.Background()
-	a := app.New(ctx)
+	a, err := app.New(ctx)
+	if err != nil {
+		panic(err)
+	}
 	a.Run(ctx)
 }
