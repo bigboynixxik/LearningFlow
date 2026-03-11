@@ -32,7 +32,9 @@ func New(ctx context.Context) *App {
 
 func (a *App) Run(ctx context.Context) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", ssr.HandleHome)
+	log := logger.FromContext(ctx)
+	mux.HandleFunc("/", ssr.LoggingMiddleware(log, ssr.HandleHome))
+
 	logger.FromContext(ctx).Info("App.Run starting server", "port", a.HTTPPort)
 	if err := http.ListenAndServe(":"+a.HTTPPort, mux); err != nil {
 		logger.FromContext(ctx).Error("App.Run failed to start server", "port", a.HTTPPort)
