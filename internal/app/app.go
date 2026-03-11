@@ -33,7 +33,7 @@ func New(ctx context.Context) (*App, error) {
 	return &App{HTTPPort: cfg.HTTPPort, Logs: logs}, nil
 }
 
-func (a *App) Run(ctx context.Context) {
+func (a *App) Run() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", ssr.LoggingMiddleware(a.Logs, ssr.HandleHome))

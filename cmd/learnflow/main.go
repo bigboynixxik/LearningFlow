@@ -11,5 +11,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	a.Run(ctx)
+	a.Run()
 }
