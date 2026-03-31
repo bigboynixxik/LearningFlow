@@ -40,7 +40,7 @@ func With(args ...any) *slog.Logger {
 	return slog.With(args...)
 }
 
-func IntoContext(ctx context.Context, log *slog.Logger) context.Context {
+func WithContext(ctx context.Context, log *slog.Logger) context.Context {
 	return context.WithValue(ctx, loggerKey, log)
 }
 
