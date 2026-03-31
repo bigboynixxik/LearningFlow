@@ -1,6 +1,6 @@
 -- +goose Up
 
--- 1. Таблица пользователей (Базовая для авторизации)
+-- Таблица пользователей (Базовая для авторизации)
 CREATE TABLE users (
                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                        email VARCHAR(255) UNIQUE NOT NULL,
@@ -9,13 +9,20 @@ CREATE TABLE users (
                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Таблица предметов (Справочник)
+CREATE TABLE sessions (
+                          token VARCHAR(255) PRIMARY KEY, -- Сам токен, который мы отдадим в Cookie
+                          user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                          expires_at TIMESTAMP WITH TIME ZONE NOT NULL, -- Время "протухания" сессии
+                          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Таблица предметов (Справочник)
 CREATE TABLE subjects (
                           id BIGSERIAL PRIMARY KEY,
                           name VARCHAR(255) UNIQUE NOT NULL
 );
 
--- 3. Профиль репетитора (Связан с users)
+-- Профиль репетитора (Связан с users)
 CREATE TABLE tutors (
                         user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
                         name VARCHAR(255) NOT NULL,
@@ -24,14 +31,14 @@ CREATE TABLE tutors (
                         photo_path VARCHAR(255)
 );
 
--- 4. Связь Многие-ко-Многим (Репетитор <-> Предмет)
+-- Связь Многие-ко-Многим (Репетитор <-> Предмет)
 CREATE TABLE tutor_subjects (
                                 tutor_id UUID REFERENCES tutors(user_id) ON DELETE CASCADE,
                                 subject_id BIGINT REFERENCES subjects(id) ON DELETE CASCADE,
                                 PRIMARY KEY (tutor_id, subject_id)
 );
 
--- 5. Слоты времени (Расписание и Корзина в одном флаконе)
+-- Слоты времени (Расписание и Корзина в одном флаконе)
 CREATE TABLE slots (
                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                        tutor_id UUID NOT NULL REFERENCES tutors(user_id) ON DELETE CASCADE,

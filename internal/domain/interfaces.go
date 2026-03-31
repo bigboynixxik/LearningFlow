@@ -37,3 +37,9 @@ type SlotRepository interface {
 
 	CheckoutCart(ctx context.Context, studentID string) error
 }
+
+type SessionRepository interface {
+	Create(ctx context.Context, session *models.Session) error
+	GetByToken(ctx context.Context, token string) (*models.Session, error)
+	Delete(ctx context.Context, token string) error // Для Logout
+}
