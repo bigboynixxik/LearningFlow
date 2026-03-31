@@ -1,7 +1,9 @@
 package config
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -18,7 +20,9 @@ func LoadConfig(path string) (*Config, error) {
 	v.AutomaticEnv()
 
 	if err := v.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("config.LoadConfig: ошибка чтения конфига %w", err)
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, fmt.Errorf("config.LoadConfig: ошибка чтения конфига %w", err)
+		}
 	}
 	var cfg Config
 	if err := v.Unmarshal(&cfg); err != nil {

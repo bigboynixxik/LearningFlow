@@ -50,7 +50,7 @@ func (r *UserRepository) Create(ctx context.Context, user *models.User) error {
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	l := logger.FromContext(ctx)
 
-	query, args, err := sq.Select("id", "email", "password_hash", "role").
+	query, args, err := r.sq.Select("id", "email", "password_hash", "role").
 		From("users").
 		Where(sq.Eq{"email": email}).ToSql()
 	if err != nil {
