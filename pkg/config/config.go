@@ -1,11 +1,10 @@
 package config
 
 import (
-	"errors"
 	"fmt"
-	"os"
 
-	"github.com/spf13/viper"
+	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -15,18 +14,15 @@ type Config struct {
 }
 
 func LoadConfig(path string) (*Config, error) {
-	v := viper.New()
-	v.SetConfigFile(path)
-	v.AutomaticEnv()
-
-	if err := v.ReadInConfig(); err != nil {
-		if !errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("config.LoadConfig: ошибка чтения конфига %w", err)
-		}
-	}
+	_ = godotenv.Load(path)
+	//if err != nil {
+	//	return nil, fmt.Errorf("config.LoadConfig: %w", err)
+	//}
 	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("config.LoadConfig: Ошибка анмаршала конфига %w", err)
+
+	err := env.Parse(&cfg)
+	if err != nil {
+		return nil, fmt.Errorf("config.LoadConfig failed to parse config: %w", err)
 	}
 	return &cfg, nil
 }

@@ -2,11 +2,13 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"learningflow/internal/models"
 	"learningflow/pkg/logger"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -40,18 +42,24 @@ func (r *SessionRepository) Create(ctx context.Context, session *models.Session)
 
 func (r *SessionRepository) GetByToken(ctx context.Context, token string) (*models.Session, error) {
 	l := logger.FromContext(ctx)
+
 	query, args, err := r.sq.Select("token", "user_id", "expires_at").
 		From("sessions").
 		Where(sq.Eq{"token": token}).ToSql()
 	if err != nil {
-		l.Error("session.GetByToken failed to build query", "token", token, "err", err)
-		return nil, fmt.Errorf("session.GetByToken: %w", err)
+		l.Error("db.session.GetByToken failed to build query", "token", token, "err", err)
+		return nil, fmt.Errorf("session.GetByToken build query: %w", err)
 	}
+
 	row := r.pool.QueryRow(ctx, query, args...)
 	session := &models.Session{}
+
 	if err := row.Scan(&session.Token, &session.UserID, &session.ExpiresAt); err != nil {
-		l.Error("session.GetByToken failed to scan row", "token", token, "err", err)
-		return nil, fmt.Errorf("session.GetByToken: %w", err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, models.ErrNotFound
+		}
+		l.Error("db.session.GetByToken failed to scan row", "token", token, "err", err)
+		return nil, fmt.Errorf("session.GetByToken scan: %w", err)
 	}
 	return session, nil
 }

@@ -4,7 +4,11 @@ import (
 	"context"
 	"fmt"
 	"learningflow/internal/migrations"
+	"learningflow/internal/repository/db"
+	"learningflow/internal/service"
 	"learningflow/internal/transport/ssr"
+	"learningflow/internal/transport/ssr/auth"
+	"learningflow/internal/transport/ssr/catalog"
 	"learningflow/pkg/closer"
 	"learningflow/pkg/config"
 	"learningflow/pkg/logger"
@@ -23,7 +27,6 @@ import (
 
 type App struct {
 	HTTPPort   string
-	Logs       *slog.Logger
 	pool       *pgxpool.Pool
 	closer     *closer.Closer
 	logs       *slog.Logger
@@ -57,12 +60,29 @@ func New(ctx context.Context) (*App, error) {
 		return nil, fmt.Errorf("app.New, failed to initialize migrations: %w", err)
 	}
 
+	userRepo := db.NewUserRepository(pool)
+	sessionRepo := db.NewSessionRepository(pool)
+	tutorRepo := db.NewTutorRepo(pool)
+	subjectRepo := db.NewSubjectRepo(pool)
+
+	authSvc := service.NewAuthService(userRepo, sessionRepo)
+	tutorSvc := service.NewTutorService(tutorRepo)
+	subjectSvc := service.NewSubjectService(subjectRepo)
+
+	catalogHandler := catalog.NewHandlerCatalog(subjectSvc, tutorSvc)
+	authHandler := auth.NewAuthHandler(authSvc)
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", ssr.LoggingMiddleware(logs, ssr.HandleHome))
-	mux.HandleFunc("/category/{id}", ssr.LoggingMiddleware(logs, ssr.HandleCategory))
-	mux.HandleFunc("/tutors", ssr.LoggingMiddleware(logs, ssr.HandleTutors))
-	mux.HandleFunc("/tutor/{id}", ssr.LoggingMiddleware(logs, ssr.HandleTutor))
+	mux.HandleFunc("GET /", ssr.LoggingMiddleware(logs, catalogHandler.HandleHome))
+	mux.HandleFunc("GET /category/{id}", ssr.LoggingMiddleware(logs, catalogHandler.HandleCategory))
+	mux.HandleFunc("GET /tutors", ssr.LoggingMiddleware(logs, catalogHandler.HandleTutors))
+	mux.HandleFunc("GET /tutor/{id}", ssr.LoggingMiddleware(logs, catalogHandler.HandleTutor))
+
+	mux.HandleFunc("GET /login", ssr.LoggingMiddleware(logs, authHandler.ShowLogin))
+	mux.HandleFunc("POST /login", ssr.LoggingMiddleware(logs, authHandler.ProcessLogin))
+	mux.HandleFunc("GET /register", ssr.LoggingMiddleware(logs, authHandler.ShowRegister))
+	mux.HandleFunc("POST /register", ssr.LoggingMiddleware(logs, authHandler.ProcessRegister))
 
 	fileserver := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fileserver))
@@ -87,7 +107,6 @@ func New(ctx context.Context) (*App, error) {
 
 	return &App{
 		HTTPPort:   cfg.HTTPPort,
-		Logs:       logs,
 		pool:       pool,
 		logs:       logs,
 		httpServer: httpServer,
@@ -105,7 +124,7 @@ func (a *App) Run() {
 		}
 	}()
 
-	a.Logs.Info("App.Run starting server", "port", a.HTTPPort)
+	a.logs.Info("App.Run starting server", "port", a.HTTPPort)
 
 	quit := make(chan os.Signal, 1)
 
@@ -113,9 +132,9 @@ func (a *App) Run() {
 
 	select {
 	case err := <-errCh:
-		a.Logs.Error("app.run server startup failed", "error", err)
+		a.logs.Error("app.run server startup failed", "error", err)
 	case sig := <-quit:
-		a.Logs.Info("app.run server shutdown", "signal", sig)
+		a.logs.Info("app.run server shutdown", "signal", sig)
 	}
 
 	a.logs.Info("shutting down servers")

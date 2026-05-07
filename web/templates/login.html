@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Вход - LearnFlow</title>
+</head>
+<body>
+<header>
+    <h1>Вход в систему</h1>
+    <a href="/" class="back-link">← На главную</a>
+</header>
+
+<main class="auth-container">
+    {{if .Error}}
+    <div class="error-msg">{{.Error}}</div>
+    {{end}}
+
+    <form class="auth-form" method="POST" action="/login">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit" class="btn">Войти</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9em;">
+        Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+    </p>
+</main>
+</body>
+</html>
