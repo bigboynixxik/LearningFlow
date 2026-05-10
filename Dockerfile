@@ -17,6 +17,8 @@ RUN apk add --no-cache ca-certificates git
 
 COPY --from=builder /out/learningflow /app/learningflow
 
-EXPOSE 50051 8080
+COPY web/ ./web/
+
+EXPOSE 8080
 
 CMD ["/app/learningflow"]

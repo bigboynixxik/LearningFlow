@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	AppEnv   string `mapstructure:"APP_ENV"`
-	HTTPPort string `mapstructure:"HTTP_PORT"`
-	PGDsn    string `mapstructure:"PG_DSN"`
+	AppEnv   string `env:"APP_ENV"`
+	HTTPPort string `env:"HTTP_PORT"`
+	PGDsn    string `env:"PG_DSN"`
 }
 
 func LoadConfig(path string) (*Config, error) {

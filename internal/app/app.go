@@ -74,7 +74,7 @@ func New(ctx context.Context) (*App, error) {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /", ssr.LoggingMiddleware(logs, catalogHandler.HandleHome))
+	mux.HandleFunc("GET /{$}", ssr.LoggingMiddleware(logs, catalogHandler.HandleHome))
 	mux.HandleFunc("GET /category/{id}", ssr.LoggingMiddleware(logs, catalogHandler.HandleCategory))
 	mux.HandleFunc("GET /tutors", ssr.LoggingMiddleware(logs, catalogHandler.HandleTutors))
 	mux.HandleFunc("GET /tutor/{id}", ssr.LoggingMiddleware(logs, catalogHandler.HandleTutor))
@@ -83,9 +83,10 @@ func New(ctx context.Context) (*App, error) {
 	mux.HandleFunc("POST /login", ssr.LoggingMiddleware(logs, authHandler.ProcessLogin))
 	mux.HandleFunc("GET /register", ssr.LoggingMiddleware(logs, authHandler.ShowRegister))
 	mux.HandleFunc("POST /register", ssr.LoggingMiddleware(logs, authHandler.ProcessRegister))
+	mux.HandleFunc("GET /logout", ssr.LoggingMiddleware(logs, authHandler.ProcessLogout))
 
 	fileserver := http.FileServer(http.Dir("./web/static"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fileserver))
+	mux.Handle("GET /static/", http.StripPrefix("/static/", fileserver))
 
 	httpServer := &http.Server{
 		Addr:    ":" + cfg.HTTPPort,

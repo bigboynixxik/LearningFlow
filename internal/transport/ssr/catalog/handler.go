@@ -37,23 +37,32 @@ func NewHandlerCatalog(subSvc SubjectService, tSvc TutorService) *HandlerCatalog
 type HomeData struct {
 	Title    string
 	Subjects []models.Subject
+	IsAuth   bool
 }
 
 type TutorsData struct {
 	Title        string
 	Tutors       []models.Tutor
 	CategoryName string
+	IsAuth       bool
 }
 
 type TutorData struct {
-	Title string
-	Tutor models.Tutor
+	Title  string
+	Tutor  models.Tutor
+	IsAuth bool
+}
+
+func isAuth(r *http.Request) bool {
+	_, err := r.Cookie("session_token")
+	return err == nil
 }
 
 func (h *HandlerCatalog) HandleHome(w http.ResponseWriter, r *http.Request) {
 	l := logger.FromContext(r.Context())
 
 	l.Info("ssr.HandleHome, request received on HandleHome")
+
 	subjects, err := h.subSvc.GetAll(r.Context())
 	if err != nil {
 		l.Error("catalog.HandeHome Get All Subjects Error",
@@ -62,9 +71,12 @@ func (h *HandlerCatalog) HandleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := HomeData{Subjects: subjects, Title: "Learning Flow"}
+	data := HomeData{
+		Subjects: subjects,
+		Title:    "Learning Flow",
+		IsAuth:   isAuth(r)}
 
-	tmpl, err := template.ParseFiles("web/templates/index.html")
+	tmpl, err := template.ParseFiles("web/templates/index.html", "web/templates/header.html")
 	if err != nil {
 		l.Error("ssr.HandleHome template parse error",
 			slog.String("err", err.Error()))
@@ -89,8 +101,11 @@ func (h *HandlerCatalog) HandleTutors(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	data := TutorsData{Tutors: tutors, Title: "Tutors"}
-	tmpl, err := template.ParseFiles("web/templates/tutors.html")
+	data := TutorsData{
+		Tutors: tutors,
+		Title:  "Tutors",
+		IsAuth: isAuth(r)}
+	tmpl, err := template.ParseFiles("web/templates/tutors.html", "web/templates/header.html")
 
 	if err != nil {
 		l.Error("ssr.HandleTutors template parse error",
@@ -139,8 +154,12 @@ func (h *HandlerCatalog) HandleCategory(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	data := TutorsData{Tutors: tutors, Title: "Category", CategoryName: category.Name}
-	tmpl, err := template.ParseFiles("web/templates/category.html")
+	data := TutorsData{
+		Tutors:       tutors,
+		Title:        "Category",
+		CategoryName: category.Name,
+		IsAuth:       isAuth(r)}
+	tmpl, err := template.ParseFiles("web/templates/category.html", "web/templates/header.html")
 	if err != nil {
 		l.Error("ssr.HandleCategory template parse error",
 			slog.String("err", err.Error()))
@@ -171,8 +190,11 @@ func (h *HandlerCatalog) HandleTutor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := TutorData{Tutor: *tutor, Title: "Tutor"}
-	tmpl, err := template.ParseFiles("web/templates/tutor.html")
+	data := TutorData{
+		Tutor:  *tutor,
+		Title:  "Tutor",
+		IsAuth: isAuth(r)}
+	tmpl, err := template.ParseFiles("web/templates/tutor.html", "web/templates/header.html")
 
 	if err != nil {
 		l.Error("ssr.HandleTutor template parse error",

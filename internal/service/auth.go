@@ -100,3 +100,11 @@ func (s *AuthService) ValidateSession(ctx context.Context, token string) (string
 
 	return session.UserID, nil
 }
+
+func (s *AuthService) Logout(ctx context.Context, token string) error {
+	err := s.sessionRepo.Delete(ctx, token)
+	if err != nil {
+		return fmt.Errorf("service.logout: %w", err)
+	}
+	return nil
+}

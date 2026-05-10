@@ -15,6 +15,7 @@ type ServiceAuth interface {
 	Register(ctx context.Context, email, plainPassword string, role models.Role) (string, error)
 	Login(ctx context.Context, email string, password string) (string, error)
 	ValidateSession(ctx context.Context, token string) (string, error)
+	Logout(ctx context.Context, token string) error
 }
 
 type HandlerAuth struct {
@@ -101,14 +102,15 @@ func (h *HandlerAuth) setSessionCookie(w http.ResponseWriter, token string) {
 }
 
 type TemplateAuthData struct {
-	Title string
-	Error string
+	Title  string
+	Error  string
+	IsAuth bool
 }
 
 func (h *HandlerAuth) renderAuthForm(w http.ResponseWriter, r *http.Request, tmplName string, errMsg string, statusCode int) {
 	l := logger.FromContext(r.Context())
 
-	tmpl, err := template.ParseFiles("web/templates/" + tmplName)
+	tmpl, err := template.ParseFiles("web/templates/"+tmplName, "web/templates/header.html")
 	if err != nil {
 		// Логируем ошибку парсинга
 		l.Error("auth.renderAuthForm template parse error",
@@ -118,10 +120,12 @@ func (h *HandlerAuth) renderAuthForm(w http.ResponseWriter, r *http.Request, tmp
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	_, errCookie := r.Cookie("session_token")
 
 	data := TemplateAuthData{
-		Title: "Авторизация",
-		Error: errMsg,
+		Title:  "Авторизация",
+		Error:  errMsg,
+		IsAuth: errCookie == nil,
 	}
 
 	w.WriteHeader(statusCode)
@@ -131,4 +135,21 @@ func (h *HandlerAuth) renderAuthForm(w http.ResponseWriter, r *http.Request, tmp
 			slog.String("err", err.Error()),
 			slog.String("template", tmplName))
 	}
+}
+
+func (h *HandlerAuth) ProcessLogout(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session_token")
+	if err == nil {
+		_ = h.authService.Logout(r.Context(), cookie.Value)
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   -1,
+	})
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

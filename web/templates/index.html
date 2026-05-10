@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <link rel="stylesheet" href="/static/css/style.css">
     <title>{{.Title}}</title>
 </head>
 <body>
-<h1>Учебная платформа LearnFlow</h1>
-<p>Выберите предмет, чтобы найти наставника:</p>
-<ul class="subject-list">
-    {{range .Subjects}}
-    <li><a href="/category/{{.ID}}">{{.Name}}</a></li>
-    {{end}}
-    <li><a href="/tutors" style="background: #7f8c8d;">Все репетиторы</a></li>
-</ul>
+{{template "header" .}}
+
+<main style="text-align: center;">
+    <h1>Учебная платформа LearnFlow</h1>
+    <p>Выберите предмет, чтобы найти наставника:</p>
+    <ul class="subject-list">
+        {{range .Subjects}}
+        <li><a href="/category/{{.ID}}">{{.Name}}</a></li>
+        {{end}}
+        <li><a href="/tutors" style="background: #7f8c8d;">Все репетиторы</a></li>
+    </ul>
+</main>
 </body>
 </html>
