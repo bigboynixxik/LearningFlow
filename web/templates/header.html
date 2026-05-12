@@ -1,18 +1,14 @@
 {{define "header"}}
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 30px;">
-    <div style="font-weight: bold; font-size: 1.2em; color: var(--primary);">
-        <a href="/"
-           style="text-decoration: none; color: inherit;">LearnFlow</a>
+<header class="site-header">
+    <div class="logo">
+        <a href="/">LearnFlow</a>
     </div>
-    <nav>
+    <nav class="nav-links">
         {{if .IsAuth}}
-        <a href="/cart" class="btn"
-           style="background: var(--success); margin-right: 10px;">Корзина
-            (0)</a>
-        <a href="/logout" class="back-link" style="margin: 0;">Выйти</a>
+        <a href="/cart" class="btn btn-success">Корзина ({{.CartCount}})</a>
+        <a href="/logout" class="back-link">Выйти</a>
         {{else}}
-        <a href="/login" class="back-link"
-           style="margin-right: 15px;">Войти</a>
+        <a href="/login" class="back-link">Войти</a>
         <a href="/register" class="btn">Регистрация</a>
         {{end}}
     </nav>

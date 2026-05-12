@@ -8,6 +8,7 @@ import (
 	"learningflow/internal/service"
 	"learningflow/internal/transport/ssr"
 	"learningflow/internal/transport/ssr/auth"
+	"learningflow/internal/transport/ssr/cart"
 	"learningflow/internal/transport/ssr/catalog"
 	"learningflow/pkg/closer"
 	"learningflow/pkg/config"
@@ -64,13 +65,16 @@ func New(ctx context.Context) (*App, error) {
 	sessionRepo := db.NewSessionRepository(pool)
 	tutorRepo := db.NewTutorRepo(pool)
 	subjectRepo := db.NewSubjectRepo(pool)
+	slotRepo := db.NewSlotRepo(pool)
 
 	authSvc := service.NewAuthService(userRepo, sessionRepo)
 	tutorSvc := service.NewTutorService(tutorRepo)
 	subjectSvc := service.NewSubjectService(subjectRepo)
+	slotSvc := service.NewSlotService(slotRepo)
 
-	catalogHandler := catalog.NewHandlerCatalog(subjectSvc, tutorSvc)
+	catalogHandler := catalog.NewHandlerCatalog(subjectSvc, tutorSvc, slotSvc, authSvc)
 	authHandler := auth.NewAuthHandler(authSvc)
+	cartHandler := cart.NewHandlerCart(slotSvc)
 
 	mux := http.NewServeMux()
 
@@ -84,6 +88,11 @@ func New(ctx context.Context) (*App, error) {
 	mux.HandleFunc("GET /register", ssr.LoggingMiddleware(logs, authHandler.ShowRegister))
 	mux.HandleFunc("POST /register", ssr.LoggingMiddleware(logs, authHandler.ProcessRegister))
 	mux.HandleFunc("GET /logout", ssr.LoggingMiddleware(logs, authHandler.ProcessLogout))
+
+	mux.HandleFunc("GET /cart", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.ShowCart)))
+	mux.HandleFunc("POST /cart/add", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.AddToCart)))
+	mux.HandleFunc("POST /cart/remove", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.RemoveFromCart)))
+	mux.HandleFunc("POST /cart/checkout", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.Checkout)))
 
 	fileserver := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", fileserver))

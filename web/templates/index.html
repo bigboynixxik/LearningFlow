@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/css/style.css">
     <title>{{.Title}}</title>
 </head>
 <body>
 {{template "header" .}}
 
-<main style="text-align: center;">
-    <h1>Учебная платформа LearnFlow</h1>
+<main style="text-align: center;"> <h1>Учебная платформа LearnFlow</h1>
     <p>Выберите предмет, чтобы найти наставника:</p>
     <ul class="subject-list">
         {{range .Subjects}}

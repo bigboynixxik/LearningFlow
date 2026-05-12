@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>{{.Title}} - LearnFlow</title>
+</head>
+<body>
+{{template "header" .}}
+
+<main class="cart-container">
+    <h1>Моя корзина (Слоты)</h1>
+
+    {{if .Error}}
+    <div class="error-msg">{{.Error}}</div>
+    {{end}}
+
+    {{if .Slots}}
+    <div class="cart-box">
+        <ul class="cart-list">
+            {{range .Slots}}
+            <li class="cart-item">
+                <div>
+                    <h3 class="cart-item-title">{{.TutorName}}</h3>
+                    <div class="cart-item-time">Занятие: {{.StartTime.Format "02.01.2006 15:04"}} - {{.EndTime.Format "15:04"}}</div>
+                    <div class="cart-item-price">{{.HourlyRate}} ₽</div>
+                </div>
+                <form method="POST" action="/cart/remove">
+                    <input type="hidden" name="slot_id" value="{{.ID}}">
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </li>
+            {{end}}
+        </ul>
+
+        <div class="cart-total">
+            Итого к оплате: <strong>{{.TotalSum}} ₽</strong>
+        </div>
+
+        <form method="POST" action="/cart/checkout" class="cart-actions">
+            <button type="submit" class="btn btn-success">Забронировать всё</button>
+        </form>
+    </div>
+    {{else}}
+    <div class="empty-state">
+        <p>Ваша корзина пуста</p>
+        <a href="/" class="btn">Найти репетитора</a>
+    </div>
+    {{end}}
+</main>
+</body>
+</html>

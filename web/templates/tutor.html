@@ -1,21 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/css/style.css">
     <title>{{.Tutor.Name}} - LearnFlow</title>
 </head>
 <body>
 {{template "header" .}}
-<div class="tutor-detail">
-    <a href="/tutors">← К списку</a>
+
+<div class="tutor-profile">
+    <a href="/tutors" class="back-link">← К списку</a>
     <h1>{{.Tutor.Name}}</h1>
-    <p class="price">Ставка: {{.Tutor.HourlyRate}} рублей в час</p>
+    <p class="price">Ставка: {{.Tutor.HourlyRate}} ₽ / час</p>
     <hr>
     <h3>О себе</h3>
     <p>{{.Tutor.Description}}</p>
-    <button class="btn" onclick="alert('В следующей лабе добавим в корзину!')">
-        Забронировать занятие
-    </button>
+
+    <h3 style="margin-top: 30px;">Доступное время для бронирования</h3>
+
+    {{if .FreeSlots}}
+    <div class="slots-grid">
+        {{range .FreeSlots}}
+        <form method="POST" action="/cart/add" class="slot-card">
+            <input type="hidden" name="slot_id" value="{{.ID}}">
+            <div class="slot-date">{{.StartTime.Format "02.01"}}</div>
+            <div class="slot-time">{{.StartTime.Format "15:04"}} - {{.EndTime.Format "15:04"}}</div>
+            <button type="submit" class="btn">В корзину</button>
+        </form>
+        {{end}}
+    </div>
+    {{else}}
+    <p style="color: #666;">К сожалению, у этого репетитора пока нет свободного времени.</p>
+    {{end}}
 </div>
 </body>
 </html>

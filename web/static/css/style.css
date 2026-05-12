@@ -139,3 +139,173 @@ h1 { color: var(--secondary); }
     font-size: 0.9em;
     text-align: center;
 }
+
+/* --- HEADER (ШАПКА) --- */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--white);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    border-radius: 8px; /* Добавим скругление для красоты, если страница не на всю ширину */
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: var(--primary);
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Расстояние между ссылками */
+}
+
+/* Переопределяем поведение back-link внутри шапки, чтобы не было лишних отступов */
+.site-header .back-link {
+    margin: 0;
+}
+
+.btn-success {
+    background: var(--success);
+}
+.btn-success:hover {
+    background: #219a52;
+}
+
+.btn-danger {
+    background: #e74c3c;
+}
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+/* --- КОРЗИНА (CART) --- */
+.cart-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.cart-box {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.cart-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item-title {
+    margin: 0 0 5px 0;
+    color: var(--primary);
+}
+
+.cart-item-time {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.cart-item-price {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.cart-total {
+    margin-top: 20px;
+    text-align: right;
+    font-size: 1.2em;
+}
+
+.cart-actions {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.cart-actions .btn {
+    font-size: 1.1em;
+    padding: 10px 30px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 50px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.empty-state p {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* --- ПРОФИЛЬ РЕПЕТИТОРА (СЛОТЫ) --- */
+.tutor-profile {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.slots-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.slot-card {
+    background: var(--white);
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.slot-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-color: var(--primary);
+}
+
+.slot-date {
+    font-weight: bold;
+    color: var(--secondary);
+}
+
+.slot-time {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0 15px 0;
+}
+
+.add-slot-hint {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+}
