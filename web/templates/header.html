@@ -5,6 +5,7 @@
     </div>
     <nav class="nav-links">
         {{if .IsAuth}}
+        <a href="/profile" class="back-link" style="margin-right: 15px;">Профиль</a>
         <a href="/cart" class="btn btn-success">Корзина ({{.CartCount}})</a>
         <a href="/logout" class="back-link">Выйти</a>
         {{else}}

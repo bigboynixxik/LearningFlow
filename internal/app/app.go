@@ -10,6 +10,7 @@ import (
 	"learningflow/internal/transport/ssr/auth"
 	"learningflow/internal/transport/ssr/cart"
 	"learningflow/internal/transport/ssr/catalog"
+	"learningflow/internal/transport/ssr/profile"
 	"learningflow/pkg/closer"
 	"learningflow/pkg/config"
 	"learningflow/pkg/logger"
@@ -75,6 +76,7 @@ func New(ctx context.Context) (*App, error) {
 	catalogHandler := catalog.NewHandlerCatalog(subjectSvc, tutorSvc, slotSvc, authSvc)
 	authHandler := auth.NewAuthHandler(authSvc)
 	cartHandler := cart.NewHandlerCart(slotSvc)
+	profileHandler := profile.NewHandlerProfile(slotSvc)
 
 	mux := http.NewServeMux()
 
@@ -93,6 +95,9 @@ func New(ctx context.Context) (*App, error) {
 	mux.HandleFunc("POST /cart/add", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.AddToCart)))
 	mux.HandleFunc("POST /cart/remove", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.RemoveFromCart)))
 	mux.HandleFunc("POST /cart/checkout", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, cartHandler.Checkout)))
+
+	mux.HandleFunc("GET /profile", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, profileHandler.ShowProfile)))
+	mux.HandleFunc("POST /profile/slots/add", ssr.LoggingMiddleware(logs, ssr.RequireAuth(authSvc, profileHandler.AddSlot)))
 
 	fileserver := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", fileserver))

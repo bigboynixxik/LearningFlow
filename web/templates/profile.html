@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>{{.Title}} - LearnFlow</title>
+</head>
+<body>
+{{template "header" .}}
+
+<main class="cart-container">
+    <h1>Личный кабинет</h1>
+
+    {{if .Error}}
+    <div class="error-msg">{{.Error}}</div>
+    {{end}}
+
+    {{if .Success}}
+    <div class="error-msg" style="background: #e8f8f5; color: var(--success);">
+        {{.Success}}
+    </div>
+    {{end}}
+
+    <div class="cart-box">
+        <h3 style="color: var(--primary); margin-top: 0;">Добавить время в
+            расписание</h3>
+        <p style="color: #666; font-size: 0.9em;">Выберите дату и время начала.
+            Занятие будет длиться ровно 1 час.</p>
+
+        <form method="POST" action="/profile/slots/add" class="auth-form"
+              style="max-width: 300px; margin-top: 20px;">
+            <label for="start_time"
+                   style="font-weight: bold; font-size: 0.9em;">Время
+                начала:</label>
+            <input type="datetime-local" id="start_time" name="start_time"
+                   required step="1800">
+
+            <button type="submit" class="btn btn-success"
+                    style="margin-top: 10px;">Создать слот
+            </button>
+        </form>
+    </div>
+</main>
+</body>
+</html>
